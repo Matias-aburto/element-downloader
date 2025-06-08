@@ -1,6 +1,8 @@
 (async () => {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   const formatSelect = document.getElementById('format');
+  const infoDiv = document.getElementById('info');
+  const cancelButton = document.getElementById('cancelButton');
 
   // Enviar el formato seleccionado dinámicamente
   formatSelect.addEventListener('change', async () => {
@@ -12,22 +14,50 @@
     });
   });
 
-  // Activar selección automáticamente con el formato inicial
-  chrome.scripting.executeScript({
-    target: { tabId: tab.id },
-    func: (format) => {
-      if (!window.clickDownloadActivated) {
-        window.clickDownloadActivated = true;
+  // Función para activar la selección
+  function activateSelection() {
+    chrome.scripting.executeScript({
+      target: { tabId: tab.id },
+      func: (format) => {
+        // Limpieza previa
+        function cleanup() {
+          const existingHighlight = document.querySelector('.element-highlight');
+          const existingInfoBox = document.querySelector('.element-info-box');
+          const existingOverlay = document.querySelector('.selection-overlay');
+          if (existingHighlight) existingHighlight.remove();
+          if (existingInfoBox) existingInfoBox.remove();
+          if (existingOverlay) existingOverlay.remove();
+          document.removeEventListener('mousemove', window._elementHighlightMoveHandler);
+          document.removeEventListener('click', window._elementHighlightClickHandler, true);
+          document.removeEventListener('keydown', window._elementHighlightKeyHandler, true);
+        }
+
+        cleanup();
         window.selectedFormat = format;
 
+        // Overlay visual
+        const overlay = document.createElement('div');
+        overlay.className = 'selection-overlay';
+        overlay.style.position = 'fixed';
+        overlay.style.top = '0';
+        overlay.style.left = '0';
+        overlay.style.width = '100%';
+        overlay.style.height = '100%';
+        overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.1)';
+        overlay.style.zIndex = '9998';
+        overlay.style.pointerEvents = 'none';
+        document.body.appendChild(overlay);
+
         const highlight = document.createElement('div');
+        highlight.className = 'element-highlight';
         highlight.style.position = 'absolute';
         highlight.style.backgroundColor = 'rgba(0, 128, 255, 0.3)';
         highlight.style.pointerEvents = 'none';
-        highlight.style.zIndex = 9999;
+        highlight.style.zIndex = '9999';
         document.body.appendChild(highlight);
 
         const infoBox = document.createElement('div');
+        infoBox.className = 'element-info-box';
         infoBox.style.position = 'fixed';
         infoBox.style.bottom = '10px';
         infoBox.style.left = '10px';
@@ -35,7 +65,7 @@
         infoBox.style.backgroundColor = 'rgba(0,0,0,0.7)';
         infoBox.style.color = 'white';
         infoBox.style.fontSize = '14px';
-        infoBox.style.zIndex = 10000;
+        infoBox.style.zIndex = '10000';
         infoBox.innerText = 'Selecciona un elemento...';
         document.body.appendChild(infoBox);
 
@@ -52,12 +82,13 @@
           infoBox.innerText = `Elemento: <${tagName}${classes}>${dims}`;
         }
 
-        document.addEventListener('mousemove', e => {
+        // Handlers
+        window._elementHighlightMoveHandler = e => {
           const el = document.elementFromPoint(e.clientX, e.clientY);
           if (el) updateHighlight(el);
-        });
+        };
 
-        document.addEventListener('click', e => {
+        window._elementHighlightClickHandler = e => {
           e.preventDefault();
           const el = document.elementFromPoint(e.clientX, e.clientY);
           if (el) {
@@ -70,17 +101,6 @@
             } else if (format === 'svg' && el.tagName.toLowerCase() === 'svg') {
               content = el.outerHTML;
               filename += '.svg';
-            } else if (format === 'png' || format === 'jpg') {
-              html2canvas(el).then(canvas => {
-                const dataURL = canvas.toDataURL(`image/${format}`);
-                const a = document.createElement('a');
-                a.href = dataURL;
-                a.download = `${filename}.${format}`;
-                a.click();
-              });
-              highlight.remove();
-              infoBox.remove();
-              return;
             } else {
               alert('El formato seleccionado no es compatible con este elemento.');
               return;
@@ -93,11 +113,45 @@
             a.click();
             URL.revokeObjectURL(url);
           }
-          highlight.remove();
-          infoBox.remove();
-        }, { once: true });
+          cleanup();
+        };
+
+        window._elementHighlightKeyHandler = e => {
+          if (e.key === 'Escape') {
+            e.preventDefault();
+            e.stopPropagation();
+            cleanup();
+          }
+        };
+
+        document.addEventListener('mousemove', window._elementHighlightMoveHandler);
+        document.addEventListener('click', window._elementHighlightClickHandler, true);
+        document.addEventListener('keydown', window._elementHighlightKeyHandler, true);
+      },
+      args: [formatSelect.value]
+    });
+    infoDiv.textContent = 'Selección activa - Usa ESC para cancelar o haz clic en Cancelar';
+  }
+
+  // Botón de cancelar: inyecta limpieza directa
+  cancelButton.addEventListener('click', () => {
+    chrome.scripting.executeScript({
+      target: { tabId: tab.id },
+      func: () => {
+        const existingHighlight = document.querySelector('.element-highlight');
+        const existingInfoBox = document.querySelector('.element-info-box');
+        const existingOverlay = document.querySelector('.selection-overlay');
+        if (existingHighlight) existingHighlight.remove();
+        if (existingInfoBox) existingInfoBox.remove();
+        if (existingOverlay) existingOverlay.remove();
+        document.removeEventListener('mousemove', window._elementHighlightMoveHandler);
+        document.removeEventListener('click', window._elementHighlightClickHandler, true);
+        document.removeEventListener('keydown', window._elementHighlightKeyHandler, true);
       }
-    },
-    args: [formatSelect.value]
+    });
+    infoDiv.textContent = 'Selección inactiva - Usa Ctrl+Shift+Q para activar';
   });
+
+  // Activar la selección inicialmente
+  activateSelection();
 })();

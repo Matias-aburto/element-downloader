@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Click & Download Enhanced",
+  "name": "Element Downloader",
   "version": "1.1",
   "description": "Selecciona y descarga elementos con información detallada.",
   "permissions": [
@@ -11,10 +11,25 @@
   "host_permissions": [
     "<all_urls>"
   ],
+  "icons": {
+    "16": "icon16.png",
+    "32": "icon32.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
   "action": {
     "default_popup": "popup.html"
   },
   "background": {
     "service_worker": "background.js"
+  },
+  "commands": {
+    "_execute_action": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+E",
+        "mac": "Command+Shift+E"
+      },
+      "description": "Activate the extension"
+    }
   }
 }
