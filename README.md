@@ -21,12 +21,6 @@ Element Downloader es una extensión para Chrome que te permite seleccionar y de
 
 ¡Haz tu navegación y recopilación de recursos mucho más fácil con Element Downloader!
 
-## Instalación
-1. Descarga o clona este repositorio en tu computadora.
-2. Abre Chrome y ve a `chrome://extensions/`.
-3. Activa el "Modo de desarrollador" (arriba a la derecha).
-4. Haz clic en "Cargar descomprimida" y selecciona la carpeta del proyecto.
-
 ## Uso
 1. Pulsa el atajo `Ctrl+Shift+E` (o el que configures) para abrir la extensión.
 2. Selecciona el formato de descarga (HTML o SVG).
