@@ -4,9 +4,19 @@
   const infoDiv = document.getElementById('info');
   const cancelButton = document.getElementById('cancelButton');
 
-  // Enviar el formato seleccionado dinámicamente
+  // Restaurar el formato guardado al abrir el popup
+  chrome.storage.local.get(['elementDownloaderFormat'], (result) => {
+    if (result.elementDownloaderFormat) {
+      formatSelect.value = result.elementDownloaderFormat;
+    }
+    // Activar la selección con el formato restaurado
+    activateSelection();
+  });
+
+  // Guardar el formato seleccionado cada vez que cambia
   formatSelect.addEventListener('change', async () => {
     const selectedFormat = formatSelect.value;
+    chrome.storage.local.set({ elementDownloaderFormat: selectedFormat });
     chrome.scripting.executeScript({
       target: { tabId: tab.id },
       func: (format) => { window.selectedFormat = format; },
@@ -16,6 +26,7 @@
 
   // Función para activar la selección
   function activateSelection() {
+    const selectedFormat = formatSelect.value;
     chrome.scripting.executeScript({
       target: { tabId: tab.id },
       func: (format) => {
@@ -128,7 +139,7 @@
         document.addEventListener('click', window._elementHighlightClickHandler, true);
         document.addEventListener('keydown', window._elementHighlightKeyHandler, true);
       },
-      args: [formatSelect.value]
+      args: [selectedFormat]
     });
     infoDiv.textContent = 'Selección activa - Usa ESC para cancelar o haz clic en Cancelar';
   }
@@ -152,6 +163,5 @@
     infoDiv.textContent = 'Selección inactiva - Usa Ctrl+Shift+Q para activar';
   });
 
-  // Activar la selección inicialmente
-  activateSelection();
+  // Ya no activamos la selección aquí, se hace tras restaurar el formato
 })();

@@ -1,12 +1,25 @@
 # Element Downloader
 
-Una extensión de Chrome para seleccionar y descargar cualquier elemento HTML o SVG de una página web de forma sencilla.
+¡Descarga cualquier elemento de una página web con un solo clic!
 
-## Características
-- Selecciona cualquier elemento de la página y descárgalo como HTML o SVG.
-- Interfaz visual para seleccionar elementos.
-- Atajo de teclado configurable para activar la extensión (por defecto: Ctrl+Shift+E).
-- Salida rápida del modo selección con la tecla ESC o con el botón "Cancelar Selección".
+## ¿Qué es?
+Element Downloader es una extensión para Chrome que te permite seleccionar y descargar fácilmente cualquier elemento visual de una página web, ya sea en formato HTML o SVG.
+
+## ¿Cómo funciona?
+1. Activa la extensión usando el atajo de teclado (por defecto: Ctrl+Shift+E) o haciendo clic en el icono de la extensión.
+2. Elige el formato de descarga (HTML o SVG).
+3. Pasa el mouse sobre el elemento que quieras descargar y haz clic sobre él.
+4. ¡Listo! El elemento se descargará automáticamente a tu computadora.
+5. Puedes cancelar la selección en cualquier momento presionando la tecla ESC o usando el botón "Cancelar Selección".
+
+## Características principales
+- Descarga cualquier elemento de la web en HTML o SVG.
+- Interfaz visual e intuitiva para seleccionar elementos.
+- Recuerda tu formato favorito para futuras descargas.
+- Atajo de teclado configurable para máxima comodidad.
+- Salida rápida del modo selección con ESC o botón dedicado.
+
+¡Haz tu navegación y recopilación de recursos mucho más fácil con Element Downloader!
 
 ## Instalación
 1. Descarga o clona este repositorio en tu computadora.

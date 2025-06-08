@@ -1,12 +1,13 @@
 {
   "manifest_version": 3,
   "name": "Element Downloader",
-  "version": "1.1",
+  "version": "1.0.0",
   "description": "Selecciona y descarga elementos con información detallada.",
   "permissions": [
     "downloads",
     "scripting",
-    "activeTab"
+    "activeTab",
+    "storage"
   ],
   "host_permissions": [
     "<all_urls>"
